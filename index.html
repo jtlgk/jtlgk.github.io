@@ -1,33 +1,160 @@
-<h1>정시하</h1>
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width">
-    <title>repl.it</title>
-    <link href="style.css" rel="stylesheet" type="text/css" />
-  </head>
 <style>
+#calendar {
+    width: 600px;
+    height: 400px;
+    text-align: center;
+    border: 1px solid black;
+}
+
+.sunday {
+  color:red;
+}
+
+.week {
+    display: flex;
+}
+
+.weekname {
+    width: 80px;
+    font-weight: bold;
+    color: brown;
+    background-color: aqua;
+    padding:10px;
+}
+
+.days {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.daynum {
+    width: 85.5px;
+    line-height: 30px;
+    height: 43px;
+    cursor: pointer;
+}
+
+.daynum .empty {
+    pointer-events: none;
+}
+
+.daynum:hover {
+    background: gray;
+    color: white;
+}
+.prev-btn{
+  position: absolute;
+  top:20px;
+  left:30px;
+}
+.next-btn{
+  position: absolute;
+  top:20px;
+  left:550px;
+}
+.today{
+  background-color: yellow;
+  color: black
+}
+#goto{
+  position: absolute;
+  left:400px;
+  top: 40px;
+}
+</style>
+<link rel="stylesheet" href="style.css">
+<div id="calendar">
+    <h2></h2>
+    <div class="week"></div>
+    <div class="days"></div>
+    <button id="goto" onClick="today_init()" style="display:none">이번달로>>></button>
+</div>
+<button class="prev-btn" onclick="handlePrevCalendar()">이전</button>
+<button class="next-btn" onclick="handleNextCalendar()">다음</button>
+<script src="script.js"></script>
+<script>
+const calendar = document.getElementById("calendar");
+const week = document.querySelector(".week");
+const days = document.querySelector(".days");
+
+let today = new Date();
+let count = 0;
+
+const firstDay = (count) =>
+    new Date(today.getFullYear(), today.getMonth() + count, 1);
+const lastDay = (count) =>
+    new Date(today.getFullYear(), today.getMonth() + count + 1, 0);
+const weekName = ["일", "월", "화", "수", "목", "금", "토"];
+
+week.innerHTML = weekName
+    .map((week) => `<div class="weekname"> ${week} </div>`)
+    .join("");
+1;
+
+function calendarBuilding(firstDate, lastDate) {
+    const calendarHeader = calendar.querySelector("h2");
+
+    calendarHeader.innerText = `${lastDate.getFullYear()}년 ${
+        lastDate.getMonth() +1
+    }월`;
+
+    days.innerHTML = "";
+    let weekday_no = 0;
+
+    for (let i = 0; i < firstDate+1; i++) {
+        days.innerHTML += `<div class="daynum empty"></div>`;
+        weekday_no++;
+    }
+    
+    for (let i = 1; i < lastDate.getDate() + 1; i++) {
+      if ((weekday_no%7) == 0){
+        if (i == today.getDate() && count == 0){
+        days.innerHTML += `<div class="daynum today sunday"> ${i} </div>`;
+      }else {
+        days.innerHTML += `<div class="daynum sunday"> ${i} </div>`;
+      }
+    }
+      else{
+        if (i == today.getDate() && count == 0){
+         days.innerHTML += `<div class="daynum today"> ${i} </div>`;
+      }else {
+        days.innerHTML += `<div class="daynum"> ${i} </div>`;
+      }
+    }
   
-a{
-  text-decoration: none;
-  color :seagreen; 
+    days.innerHTML += "</div>";
+    weekday_no++;
+    }
+    if (count != 0){
+   document.getElementById("goto").style.display="block";
+}else{
+ document.getElementById("goto").style.display="none";
 }
-a:hover{
-  color : gold;
 }
-  </style>
-<body>
-  <h1>자주 가는 사이트</h1>
-</body>
-<div class="link">
-  <a href="https://www.youtube.com/?gl=KR">유튜브</a>
-</div>
-<div class="link">
-  <a href="https://comic.naver.com/index.nhn">웹툰</a>
-</div>
-<div class="link">
-  <a href="https://ko-kr.facebook.com/">페이스북</a>
-</div>
-</html>
-https://sites.google.com/d/1McJaoiI3mkZ7WGzqN1Ay4lwgUYRSEQKL/p/15dnymc5Wh5Wn4RY-O_43r3FqAxHbmRNr/edit
+
+function handleNextCalendar() {
+    count += 1;
+    const firstDate = firstDay(count).getDay();
+    const lastDate = lastDay(count);
+    calendarBuilding(firstDate, lastDate);
+}
+
+function handlePrevCalendar() {
+    count -= 1;
+    const firstDate = firstDay(count).getDay();
+    const lastDate = lastDay(count);
+    calendarBuilding(firstDate, lastDate);
+}
+
+function init() {
+    const firstDate = firstDay(0).getDate();
+    const lastDate = lastDay(0);
+    calendarBuilding(firstDate, lastDate);
+}
+
+function today_init(){
+  count = 0
+  init();
+}
+init();
+</script>
